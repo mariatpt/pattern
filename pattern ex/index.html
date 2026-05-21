@@ -158,11 +158,7 @@ function animate(time) {
   animId = requestAnimationFrame(animate);
 }
 
-const rotSlider = document.getElementById('rotSlider');
-const gapSlider = document.getElementById('gapSlider');
 const qtySlider = document.getElementById('qtySlider');
-const rotVal = document.getElementById('rotVal');
-const gapVal = document.getElementById('gapVal');
 const qtyVal = document.getElementById('qtyVal');
 
 function startAnim() {
@@ -170,18 +166,6 @@ function startAnim() {
   buildScene();
   animId = requestAnimationFrame(animate);
 }
-
-rotSlider.addEventListener('input', () => {
-  rotRange = rotSlider.value * Math.PI / 180;
-  rotVal.textContent = rotSlider.value + 'Â°';
-  startAnim();
-});
-
-gapSlider.addEventListener('input', () => {
-  gap = Number(gapSlider.value);
-  gapVal.textContent = gap;
-  startAnim();
-});
 
 qtySlider.addEventListener('input', () => {
   qty = Number(qtySlider.value);
