@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>saudade</title>
+  <style>
+    @font-face {
+      font-family: 'Marola';
+      src: url('Marola.ttf') format('truetype');
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Marola', serif; }
+
+    body { background: #fff; }
+    #container {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      perspective: 800px;
+    }
+    #word {
+      position: relative;
+      display: flex;
+      font-size: 14rem;
+      color: #0055FF;
+      -webkit-text-stroke: 1.5px #0055FF;
+      letter-spacing: 0.05em;
+      user-select: none;
+      transform-style: preserve-3d;
+    }
+    .letter {
+      position: relative;
+      display: inline-block;
+      will-change: transform, opacity, color;
+      filter: url(#liquid);
+    }
+    .letter::after {
+      content: attr(data-ch);
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: inherit;
+      font-family: inherit;
+      color: transparent;
+      -webkit-text-stroke: 0;
+      opacity: var(--tile-a, 1);
+      transition: opacity 0.3s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Crect x='1' y='1' width='48' height='48' fill='none' stroke='rgba(0,50,160,0.5)' stroke-width='1.5'/%3E%3Cpolygon points='25,4 46,25 25,46 4,25' fill='none' stroke='rgba(0,50,160,0.25)' stroke-width='1'/%3E%3Ccircle cx='4' cy='4' r='2.5' fill='rgba(0,50,160,0.4)'/%3E%3Ccircle cx='46' cy='4' r='2.5' fill='rgba(0,50,160,0.4)'/%3E%3Ccircle cx='4' cy='46' r='2.5' fill='rgba(0,50,160,0.4)'/%3E%3Ccircle cx='46' cy='46' r='2.5' fill='rgba(0,50,160,0.4)'/%3E%3Ccircle cx='25' cy='25' r='5' fill='none' stroke='rgba(0,50,160,0.3)' stroke-width='1'/%3E%3C/svg%3E");
+      background-size: 50px 50px;
+      -webkit-background-clip: text;
+      background-clip: text;
+      pointer-events: none;
+      mix-blend-mode: multiply;
+    }
+  </style>
+  <svg style="position:fixed;width:0;height:0;">
+    <filter id="liquid">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise">
+        <animate attributeName="baseFrequency" values="0.015;0.025;0.015" dur="6s" repeatCount="indefinite"/>
+      </feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+</head>
+<body>
+  <div id="container">
+    <div id="word"></div>
+  </div>
+  <script>
+    const word = document.getElementById('word');
+    const letters = 'SAUDADE'.split('').map((ch, i) => {
+      const span = document.createElement('span');
+      span.className = 'letter';
+      span.textContent = ch;
+      span.dataset.index = i;
+      span.dataset.ch = ch;
+      word.appendChild(span);
+      return span;
+    });
+
+    // ── animation constants ──
+    const AZUL = { r: 0, g: 85, b: 255 };
+    const BRANCO = { r: 255, g: 255, b: 255 };
+
+    const HOLD_DURATION = 3000;
+
+    const PAIRS = [
+      { left: 0, right: 6, delay: 0 },     // S, E
+      { left: 1, right: 5, delay: 1000 },   // A, D
+    ];
+    const SPLIT = [
+      { idx: 2, dir: -1, delay: 2000 },  // U ←
+      { idx: 3, dir: -1, delay: 2150 },  // D ← (pouco depois)
+      { idx: 4, dir: 1, delay: 2000 },   // A →
+    ];
+    const MOVE_DURATION = 5000;
+    const MOVE_DISTANCE = 500;
+    const PAUSE_AFTER = 3000;
+    const RIPPLE_AMP = 30;
+    const RIPPLE_ROT = 15;
+
+    // ── color helpers ──
+    function lerpColor(c1, c2, t) {
+      return {
+        r: Math.round(c1.r + (c2.r - c1.r) * t),
+        g: Math.round(c1.g + (c2.g - c1.g) * t),
+        b: Math.round(c1.b + (c2.b - c1.b) * t),
+      };
+    }
+
+    function getColorAtProgress(progress) {
+      const t = Math.min(1, Math.max(0, progress));
+      return lerpColor(AZUL, BRANCO, t);
+    }
+
+    function rgbaStr(c, a) {
+      return `rgba(${c.r},${c.g},${c.b},${a})`;
+    }
+    const FILL_A = 1;
+    const STROKE_A = 1;
+
+    // ── animation loop ──
+    let animating = false;
+    let phase = 'waiting';
+    let phaseStartTime = 0;
+
+    function startAnimation() {
+      animating = true;
+      phase = 'animating';
+      phaseStartTime = performance.now();
+      requestAnimationFrame(tick);
+    }
+
+    function oceanWave(index, time) {
+      const phase = time * 0.005 - (index - 3) * 0.6;
+      return Math.sin(phase) * RIPPLE_AMP;
+    }
+    function oceanRotX(index, time) {
+      const phase = time * 0.005 - (index - 3) * 0.6;
+      return Math.cos(phase) * RIPPLE_ROT;
+    }
+    function letterRotY(i) {
+      return (i - 3) * 4;
+    }
+
+    function tick(now) {
+      if (!animating) return;
+
+      const elapsed = now - phaseStartTime;
+
+      if (phase === 'animating') {
+        if (elapsed < HOLD_DURATION) {
+          letters.forEach((l, i) => {
+            l.style.transform = `translateX(0) translateY(${oceanWave(i, elapsed)}px) rotateX(${oceanRotX(i, elapsed)}deg) rotateY(${letterRotY(i)}deg)`;
+            l.style.color = rgbaStr(AZUL, FILL_A);
+            l.style.webkitTextStrokeColor = rgbaStr(AZUL, STROKE_A);
+          });
+        } else {
+          const animElapsed = elapsed - HOLD_DURATION;
+          const maxDuration = Math.max(...PAIRS.map(p => p.delay + MOVE_DURATION), ...SPLIT.map(s => s.delay + MOVE_DURATION));
+
+          if (animElapsed >= maxDuration) {
+            phase = 'pausing';
+            phaseStartTime = now;
+          } else {
+            SPLIT.forEach(s => {
+              const progress = Math.min(1, Math.max(0, (animElapsed - s.delay) / MOVE_DURATION));
+              const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+              const color = getColorAtProgress(progress);
+              const offset = eased * MOVE_DISTANCE;
+              const ripple = oceanWave(s.idx, elapsed);
+              const rot = oceanRotX(s.idx, elapsed);
+              const l = letters[s.idx];
+              l.style.transform = `translateX(${s.dir * offset}px) translateY(${ripple}px) rotateX(${rot}deg) rotateY(${letterRotY(s.idx)}deg)`;
+              l.style.color = rgbaStr(color, FILL_A);
+              l.style.webkitTextStrokeColor = rgbaStr(color, STROKE_A);
+              l.style.setProperty('--tile-a', 1 - progress);
+            });
+
+            PAIRS.forEach((pair) => {
+              const progress = Math.min(1, Math.max(0, (animElapsed - pair.delay) / MOVE_DURATION));
+              const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+              const color = getColorAtProgress(progress);
+              const colorStr = rgbaStr(color, FILL_A);
+              const strokeStr = rgbaStr(color, STROKE_A);
+              const offset = eased * MOVE_DISTANCE;
+
+              const lRipple = oceanWave(pair.left, elapsed);
+              const rRipple = oceanWave(pair.right, elapsed);
+              const lRot = oceanRotX(pair.left, elapsed);
+              const rRot = oceanRotX(pair.right, elapsed);
+
+              letters[pair.left].style.transform = `translateX(-${offset}px) translateY(${lRipple}px) rotateX(${lRot}deg) rotateY(${letterRotY(pair.left)}deg)`;
+              letters[pair.left].style.color = colorStr;
+              letters[pair.left].style.webkitTextStrokeColor = strokeStr;
+              letters[pair.left].style.setProperty('--tile-a', 1 - progress);
+
+              letters[pair.right].style.transform = `translateX(${offset}px) translateY(${rRipple}px) rotateX(${rRot}deg) rotateY(${letterRotY(pair.right)}deg)`;
+              letters[pair.right].style.color = colorStr;
+              letters[pair.right].style.webkitTextStrokeColor = strokeStr;
+              letters[pair.right].style.setProperty('--tile-a', 1 - progress);
+            });
+          }
+        }
+      } else if (phase === 'pausing') {
+        if (elapsed >= PAUSE_AFTER) {
+          phase = 'animating';
+          phaseStartTime = now;
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    startAnimation();
+  </script>
+</body>
+</html>

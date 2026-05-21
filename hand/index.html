@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hand Giraffe</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #111; overflow: hidden; font-family: sans-serif; }
+    #container { position: relative; width: 100vw; height: 100vh; }
+    #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    #video { display: none; }
+    #pip { position: absolute; bottom: 20px; right: 20px; width: 200px; height: 150px; border-radius: 8px; overflow: hidden; border: 2px solid #555; z-index: 10; }
+    #pip video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
+    #status { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: #fff; font-size: 18px; z-index: 10; text-shadow: 0 2px 4px rgba(0,0,0,0.8); background: rgba(0,0,0,0.6); padding: 8px 20px; border-radius: 20px; }
+    #instruction { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: #888; font-size: 14px; z-index: 10; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <canvas id="canvas"></canvas>
+    <div id="pip" class="hidden"><video id="pipVideo" autoplay playsinline></video></div>
+    <div id="status">Loading...</div>
+    <div id="instruction">Show your hand to the camera</div>
+  </div>
+  <video id="video" autoplay playsinline></video>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/hands.js" crossorigin="anonymous"></script>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('video');
+    const pip = document.getElementById('pip');
+    const pipVideo = document.getElementById('pipVideo');
+    const statusEl = document.getElementById('status');
+    let landmarks = null;
+    let camera = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function onResults(results) {
+      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        landmarks = results.multiHandLandmarks[0];
+        setStatus('Hand detected');
+        document.getElementById('instruction').textContent = 'Move your hand — the giraffe follows';
+      } else {
+        landmarks = null;
+        setStatus('Show your hand');
+        document.getElementById('instruction').textContent = 'Show your hand to the camera';
+      }
+      drawGiraffe();
+    }
+
+    function setStatus(msg) {
+      statusEl.textContent = msg;
+    }
+
+    async function initCamera() {
+      try {
+        setStatus('Requesting camera...');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        pipVideo.srcObject = stream;
+        await video.play();
+        setStatus('Loading hand model...');
+        pip.classList.remove('hidden');
+      } catch (err) {
+        setStatus('Camera unavailable: ' + (err.name === 'NotAllowedError' ? 'Permission denied' : err.message));
+        return;
+      }
+
+      const hands = new Hands({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4/${file}`
+      });
+
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      hands.onResults(onResults);
+
+      camera = new Camera(video, {
+        onFrame: async () => {
+          await hands.send({ image: video });
+        },
+        width: 640,
+        height: 480
+      });
+
+      setStatus('Show your hand');
+      await camera.start();
+    }
+
+    initCamera().catch(err => setStatus('Error: ' + err.message));
+
+    function toCanvasCoords(lm) {
+      return { x: (1 - lm.x) * canvas.width, y: lm.y * canvas.height };
+    }
+
+    function drawLine(from, to, w) {
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.lineWidth = w;
+      ctx.strokeStyle = '#ffde2a';
+      ctx.stroke();
+    }
+
+    function drawChain(pts, w) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.lineWidth = w;
+      ctx.strokeStyle = '#ffde2a';
+      ctx.stroke();
+    }
+
+    function drawJungle(offsetX, offsetY) {
+      const ox = offsetX || 0;
+      const oy = offsetY || 0;
+
+      // Sky gradient
+      const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      grad.addColorStop(0, '#87CEEB');
+      grad.addColorStop(0.6, '#c8e6c9');
+      grad.addColorStop(1, '#2e7d32');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Ground
+      ctx.fillStyle = '#4caf50';
+      ctx.fillRect(0, canvas.height * 0.8, canvas.width, canvas.height * 0.2);
+      ctx.fillStyle = '#388e3c';
+      ctx.fillRect(0, canvas.height * 0.85, canvas.width, canvas.height * 0.15);
+
+      // Trees (deeper layer — moves slower)
+      const trees = [
+        { x: 0.1, h: 0.5 }, { x: 0.25, h: 0.6 }, { x: 0.5, h: 0.55 },
+        { x: 0.75, h: 0.45 }, { x: 0.9, h: 0.5 },
+      ];
+      for (const t of trees) {
+        const tx = canvas.width * t.x + ox * 0.3;
+        const th = canvas.height * t.h;
+        const ty = canvas.height * 0.8 - th;
+        ctx.fillStyle = '#5d4037';
+        ctx.fillRect(tx - 8, ty, 16, th);
+        ctx.fillStyle = '#2e7d32';
+        ctx.beginPath();
+        ctx.arc(tx, ty, th * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#388e3c';
+        ctx.beginPath();
+        ctx.arc(tx - th * 0.15, ty + th * 0.1, th * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(tx + th * 0.15, ty + th * 0.1, th * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Sun
+      const sunX = canvas.width * 0.85 + ox * 0.1;
+      const sunY = canvas.height * 0.1 + oy * 0.1;
+      ctx.fillStyle = '#fff9c4';
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 40, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#ffee58';
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 35, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Grass (closer layer — moves faster)
+      const grassX = [10,30,50,70,90,120,150,180,210,240,280,310,350,400,430,470,510,550,600,650,700,750,800];
+      ctx.strokeStyle = '#2e7d32';
+      ctx.lineWidth = 2;
+      for (const x of grassX) {
+        const gx = x + ox * 0.6;
+        const h = 12 + ((x * 7) % 15);
+        ctx.beginPath();
+        ctx.moveTo(gx, canvas.height * 0.8);
+        ctx.lineTo(gx + ((x * 3) % 10) - 5, canvas.height * 0.8 - h);
+        ctx.stroke();
+      }
+    }
+
+    function drawGiraffe() {
+      // Background follows hand movement
+      let offsetX = 0, offsetY = 0;
+      if (landmarks) {
+        const centerX = (1 - landmarks[0].x) * canvas.width;
+        const centerY = landmarks[0].y * canvas.height;
+        offsetX = (canvas.width * 0.5 - centerX) * 0.4;
+        offsetY = (canvas.height * 0.6 - centerY) * 0.4;
+      }
+      drawJungle(offsetX, offsetY);
+      if (!landmarks) return;
+
+      const l = landmarks;
+      const c = (i) => toCanvasCoords(l[i]);
+
+      // Neck: wrist (0) → index MCP (5)
+      drawLine(c(0), c(5), 24);
+
+      // Head: index finger 5→6→7→8
+      drawChain([c(5), c(6), c(7), c(8)], 20);
+
+      // Giraffe head at index tip (point 8)
+      const headPt = c(8);
+      const headSize = Math.abs(c(8).y - c(5).y) || 30;
+      ctx.fillStyle = '#ffde2a';
+      ctx.beginPath();
+      ctx.arc(headPt.x, headPt.y, headSize * 0.3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#5b3300';
+      ctx.beginPath();
+      ctx.arc(headPt.x + headSize * 0.06, headPt.y - headSize * 0.04, headSize * 0.05, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#5b3300';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(headPt.x - headSize * 0.08, headPt.y - headSize * 0.12);
+      ctx.lineTo(headPt.x - headSize * 0.14, headPt.y - headSize * 0.35);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(headPt.x + headSize * 0.08, headPt.y - headSize * 0.12);
+      ctx.lineTo(headPt.x + headSize * 0.14, headPt.y - headSize * 0.35);
+      ctx.stroke();
+
+      // Party hat on head
+      ctx.fillStyle = '#ff4444';
+      ctx.beginPath();
+      ctx.moveTo(headPt.x - headSize * 0.2, headPt.y - headSize * 0.15);
+      ctx.lineTo(headPt.x, headPt.y - headSize * 0.7);
+      ctx.lineTo(headPt.x + headSize * 0.2, headPt.y - headSize * 0.15);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#5b3300';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Pom-pom on top
+      ctx.fillStyle = '#ff4444';
+      ctx.beginPath();
+      ctx.arc(headPt.x, headPt.y - headSize * 0.7, headSize * 0.06, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Tutu at wrist (point 0) — realistic ballet skirt
+      const wristPt = c(0);
+      const layerColors = ['rgba(255,150,200,0.5)', 'rgba(255,180,220,0.4)', 'rgba(255,200,230,0.3)'];
+      const layerRadii = [40, 55, 70];
+      for (let layer = 0; layer < 3; layer++) {
+        ctx.fillStyle = layerColors[layer];
+        ctx.beginPath();
+        const r = layerRadii[layer];
+        const steps = 20;
+        for (let i = 0; i <= steps; i++) {
+          const angle = -Math.PI / 2 + (i / steps - 0.5) * 1.2;
+          const ruffle = Math.sin(i * 1.5) * 8;
+          const x = wristPt.x + Math.cos(angle) * (r + ruffle);
+          const y = wristPt.y + Math.sin(angle) * (r + ruffle) + 10;
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.lineTo(wristPt.x, wristPt.y);
+        ctx.closePath();
+        ctx.fill();
+      }
+      // Waistband
+      ctx.strokeStyle = '#ff66aa';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(wristPt.x, wristPt.y, 8, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 3 legs: middle + ring + pinky
+      ctx.lineCap = 'round';
+      drawChain([c(9), c(10), c(11), c(12)], 20); // middle
+      drawChain([c(13), c(14), c(15), c(16)], 20); // ring
+      drawChain([c(17), c(18), c(19), c(20)], 20); // pinky
+
+      // Brown spots along the lines
+      ctx.fillStyle = '#5b3300';
+      ctx.lineCap = 'butt';
+      const chains = [
+        [c(0), c(5)], [c(5), c(6), c(7), c(8)],
+        [c(9), c(10), c(11), c(12)],
+        [c(13), c(14), c(15), c(16)],
+        [c(17), c(18), c(19), c(20)]
+      ];
+      for (const chain of chains) {
+        for (let i = 0; i < chain.length - 1; i++) {
+          const a = chain[i], b = chain[i + 1];
+          for (let t = 0.2; t < 1; t += 0.3) {
+            ctx.beginPath();
+            ctx.arc(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

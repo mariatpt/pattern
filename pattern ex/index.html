@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Circle Pattern</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #fff; font-family: sans-serif; }
+  canvas { display: block; width: 100%; height: 100%; }
+  .controls {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.75); color: #fff;
+    padding: 12px 20px; display: flex; gap: 24px;
+    flex-wrap: wrap; align-items: center;
+    font-size: 13px; z-index: 10;
+  }
+  .controls label { display: flex; align-items: center; gap: 8px; }
+.controls input[type="range"] { width: 120px; }
+.controls input[type="color"] { width: 32px; height: 24px; border: none; border-radius: 3px; cursor: pointer; padding: 0; background: none; }
+.controls .value { min-width: 32px; text-align: right; }
+.controls .colors { display: flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div class="controls">
+  <label>
+    Rotação
+    <input type="range" id="rotSlider" min="0" max="360" value="360">
+    <span class="value" id="rotVal">360°</span>
+  </label>
+  <label>
+    Espaço
+    <input type="range" id="gapSlider" min="0" max="80" value="2">
+    <span class="value" id="gapVal">2</span>
+  </label>
+  <label>
+    Quantidade
+    <input type="range" id="qtySlider" min="4" max="250" value="186">
+    <span class="value" id="qtyVal">186</span>
+  </label>
+  <span class="colors">
+    <input type="color" id="color1" value="#a4fff7">
+    <input type="color" id="color2" value="#FF7E70">
+    <input type="color" id="color3" value="#FFEE8C">
+  </span>
+</div>
+
+<script>
+"use strict";
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const R_SMALL_BASE = 10;
+const R_LARGE_BASE = 30;
+
+let rotRange = Math.PI * 2;
+let gap = 2;
+let qty = 186;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function getGroupCircles(rSmall, rLarge, gap) {
+  const earDx = rLarge * 0.8 + gap;
+  const minVert = rSmall + gap + rLarge;
+  const earY = -minVert / 3;
+  const headY = -2 * earY;
+
+  return [
+    { x: 0,       y: headY, radius: rLarge },
+    { x: -earDx,  y: earY,  radius: rSmall },
+    { x:  earDx,  y: earY,  radius: rSmall },
+  ];
+}
+
+function getGroupRadius(circles) {
+  let maxDist = 0;
+  for (const c of circles) {
+    const d = Math.sqrt(c.x * c.x + c.y * c.y) + c.radius;
+    if (d > maxDist) maxDist = d;
+  }
+  return maxDist;
+}
+
+function generatePlacements(canvasW, canvasH, circles, extGap) {
+  const groupRad = getGroupRadius(circles);
+  const step = groupRad * 2 + extGap;
+  const cols = Math.ceil(canvasW / step) + 1;
+  const rows = Math.ceil(canvasH / step) + 1;
+  const offsetX = (canvasW - (cols - 1) * step) / 2;
+  const offsetY = (canvasH - (rows - 1) * step) / 2;
+
+  const placements = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const angle = (Math.random() - 0.5) * rotRange;
+      placements.push({ cx: offsetX + col * step, cy: offsetY + row * step, angle });
+    }
+  }
+
+  return placements;
+}
+
+function drawGroup(ctx, cx, cy, angle, circles, color) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(angle);
+  ctx.fillStyle = color;
+
+  for (const c of circles) {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, c.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+let animId = null;
+let cachedCircles = null;
+let cachedPlacements = [];
+let cachedPhases = [];
+
+function getPalette() {
+  return [
+    document.getElementById('color1').value,
+    document.getElementById('color2').value,
+    document.getElementById('color3').value,
+  ];
+}
+
+function buildScene() {
+  const s = 0.2 + 2.8 * (1 - (qty - 4) / 246);
+  const rSmall = R_SMALL_BASE * s;
+  const rLarge = R_LARGE_BASE * s;
+  const internalGap = gap * s;
+  cachedCircles = getGroupCircles(rSmall, rLarge, internalGap);
+  cachedPlacements = generatePlacements(canvas.width, canvas.height, cachedCircles, internalGap);
+  cachedPhases = cachedPlacements.map(() => Math.random() * 1000);
+}
+
+function animate(time) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const palette = getPalette();
+  for (let i = 0; i < cachedPlacements.length; i++) {
+    const p = cachedPlacements[i];
+    const idx = Math.floor(((time + cachedPhases[i]) * 0.002) % palette.length);
+    drawGroup(ctx, p.cx, p.cy, p.angle, cachedCircles, palette[idx]);
+  }
+
+  animId = requestAnimationFrame(animate);
+}
+
+const rotSlider = document.getElementById('rotSlider');
+const gapSlider = document.getElementById('gapSlider');
+const qtySlider = document.getElementById('qtySlider');
+const rotVal = document.getElementById('rotVal');
+const gapVal = document.getElementById('gapVal');
+const qtyVal = document.getElementById('qtyVal');
+
+function startAnim() {
+  if (animId) cancelAnimationFrame(animId);
+  buildScene();
+  animId = requestAnimationFrame(animate);
+}
+
+rotSlider.addEventListener('input', () => {
+  rotRange = rotSlider.value * Math.PI / 180;
+  rotVal.textContent = rotSlider.value + '°';
+  startAnim();
+});
+
+gapSlider.addEventListener('input', () => {
+  gap = Number(gapSlider.value);
+  gapVal.textContent = gap;
+  startAnim();
+});
+
+qtySlider.addEventListener('input', () => {
+  qty = Number(qtySlider.value);
+  qtyVal.textContent = qty;
+  startAnim();
+});
+
+document.querySelectorAll('.colors input').forEach(el => {
+  el.addEventListener('input', startAnim);
+});
+
+window.addEventListener('resize', () => {
+  resize();
+  startAnim();
+});
+
+resize();
+startAnim();
+</script>
+</body>
+</html>
