@@ -71,18 +71,10 @@
     .env-3 { bottom: 20%; right: 25%; width: 110px; }
     .env-4 { top: 30%; right: 35%; width: 90px; }
 
-    /* Doodles */
-    .doodle { position: absolute; z-index: 1; opacity: 0.5; pointer-events: none; }
-    .doodle-1 { width: 120px; bottom: 30%; left: 10%; }
-    .doodle-2 { width: 50px; top: 20%; left: 45%; }
-    .handnote {
-      position: absolute; font-family: 'Caveat', cursive; font-size: 18px;
-      color: #C23F1C; opacity: 0.7; pointer-events: none;
-    }
-    .note-1 { bottom: 10%; right: 40%; transform: rotate(-5deg); }
-
     /* About & Contact */
-    #about { background: #fff; }
+    #about { background: #312783; }
+    #about .section-title,
+    #about .section-text { color: #fff; }
     #contact { background: #EDE8E4; }
     .section-content {
       max-width: 720px; margin: 0 auto; padding-top: 10vh;
@@ -103,7 +95,6 @@
       transition: border-color 0.3s;
     }
     .contact-link:hover { border-color: #C23F1C; }
-    .doodle-divider { width: 200px; margin-top: 48px; }
     /* Responsive */
     @media (max-width: 900px) {
       section { padding: 72px 32px 32px; }
@@ -124,8 +115,6 @@
       .env-3 { bottom: 30%; right: 10%; }
       .env-4 { top: 22%; right: 15%; }
       .env-label { font-size: 12px; }
-      .doodle-1 { width: 80px; }
-      .handnote { font-size: 14px; }
       .section-content { padding-top: 5vh; }
     }
   </style>
@@ -170,15 +159,6 @@
       </svg>
       <span class="env-label">saudade</span>
     </div>
-    <!-- Decorative doodles -->
-    <svg class="doodle doodle-1" viewBox="0 0 100 30" fill="none" stroke="#312783" stroke-width="1.5">
-      <path d="M5,15 Q25,0 50,15 T95,15" stroke-linecap="round"/>
-    </svg>
-    <svg class="doodle doodle-2" viewBox="0 0 60 60" fill="none" stroke="#C23F1C" stroke-width="1.5">
-      <path d="M30,5 L30,55 M5,30 L55,30" stroke-linecap="round"/>
-      <circle cx="30" cy="30" r="20" stroke-dasharray="4 4"/>
-    </svg>
-    <div class="handnote note-1">✦ click to explore ✦</div>
     </section>
 
   <section id="about">
@@ -189,9 +169,6 @@
         with professor Rocco Modugno<br/>
         at Abadir
       </p>
-      <svg class="doodle-divider" viewBox="0 0 200 20" fill="none" stroke="#C23F1C" stroke-width="1.5">
-        <path d="M10,10 Q50,0 100,10 T190,10" stroke-linecap="round"/>
-      </svg>
     </div>
   </section>
 
