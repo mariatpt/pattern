@@ -45,6 +45,10 @@
     <input type="range" id="qtySlider" min="4" max="250" value="186">
     <span class="value" id="qtyVal">186</span>
   </label>
+  <label>
+    Animado
+    <input type="checkbox" id="animToggle" checked>
+  </label>
   <span class="colors">
     <input type="color" id="color1" value="#a4fff7">
     <input type="color" id="color2" value="#FF7E70">
@@ -153,9 +157,10 @@ function animate(time) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const palette = getPalette();
+  const animated = document.getElementById('animToggle').checked;
   for (let i = 0; i < cachedPlacements.length; i++) {
     const p = cachedPlacements[i];
-    const idx = Math.floor(((time + cachedPhases[i]) * 0.002) % palette.length);
+    const idx = animated ? Math.floor(((time + cachedPhases[i]) * 0.002) % palette.length) : 0;
     drawGroup(ctx, p.cx, p.cy, p.angle, cachedCircles, palette[idx]);
   }
 
@@ -196,6 +201,8 @@ qtySlider.addEventListener('input', () => {
 document.querySelectorAll('.colors input').forEach(el => {
   el.addEventListener('input', startAnim);
 });
+
+document.getElementById('animToggle').addEventListener('change', startAnim);
 
 window.addEventListener('resize', () => {
   resize();
