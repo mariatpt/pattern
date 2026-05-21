@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -51,7 +51,7 @@
       if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
         landmarks = results.multiHandLandmarks[0];
         setStatus('Hand detected');
-        document.getElementById('instruction').textContent = 'Move your hand — the giraffe follows';
+        document.getElementById('instruction').textContent = 'Move your hand â€” the giraffe follows';
       } else {
         landmarks = null;
         setStatus('Show your hand');
@@ -145,7 +145,7 @@
       ctx.fillStyle = '#388e3c';
       ctx.fillRect(0, canvas.height * 0.85, canvas.width, canvas.height * 0.15);
 
-      // Trees (deeper layer — moves slower)
+      // Trees (deeper layer â€” moves slower)
       const trees = [
         { x: 0.1, h: 0.5 }, { x: 0.25, h: 0.6 }, { x: 0.5, h: 0.55 },
         { x: 0.75, h: 0.45 }, { x: 0.9, h: 0.5 },
@@ -181,7 +181,7 @@
       ctx.arc(sunX, sunY, 35, 0, Math.PI * 2);
       ctx.fill();
 
-      // Grass (closer layer — moves faster)
+      // Grass (closer layer â€” moves faster)
       const grassX = [10,30,50,70,90,120,150,180,210,240,280,310,350,400,430,470,510,550,600,650,700,750,800];
       ctx.strokeStyle = '#2e7d32';
       ctx.lineWidth = 2;
@@ -210,10 +210,10 @@
       const l = landmarks;
       const c = (i) => toCanvasCoords(l[i]);
 
-      // Neck: wrist (0) → index MCP (5)
+      // Neck: wrist (0) â†’ index MCP (5)
       drawLine(c(0), c(5), 24);
 
-      // Head: index finger 5→6→7→8
+      // Head: index finger 5â†’6â†’7â†’8
       drawChain([c(5), c(6), c(7), c(8)], 20);
 
       // Giraffe head at index tip (point 8)
@@ -255,7 +255,7 @@
       ctx.arc(headPt.x, headPt.y - headSize * 0.7, headSize * 0.06, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tutu at wrist (point 0) — realistic ballet skirt
+      // Tutu at wrist (point 0) â€” realistic ballet skirt
       const wristPt = c(0);
       const layerColors = ['rgba(255,150,200,0.5)', 'rgba(255,180,220,0.4)', 'rgba(255,200,230,0.3)'];
       const layerRadii = [40, 55, 70];
@@ -311,3 +311,4 @@
   </script>
 </body>
 </html>
+

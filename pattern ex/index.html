@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -28,12 +28,12 @@
 
 <div class="controls">
   <label>
-    Rotação
+    RotaÃ§Ã£o
     <input type="range" id="rotSlider" min="0" max="360" value="360">
-    <span class="value" id="rotVal">360°</span>
+    <span class="value" id="rotVal">360Â°</span>
   </label>
   <label>
-    Espaço
+    EspaÃ§o
     <input type="range" id="gapSlider" min="0" max="80" value="2">
     <span class="value" id="gapVal">2</span>
   </label>
@@ -174,7 +174,7 @@ function startAnim() {
 
 rotSlider.addEventListener('input', () => {
   rotRange = rotSlider.value * Math.PI / 180;
-  rotVal.textContent = rotSlider.value + '°';
+  rotVal.textContent = rotSlider.value + 'Â°';
   startAnim();
 });
 
@@ -204,3 +204,4 @@ startAnim();
 </script>
 </body>
 </html>
+

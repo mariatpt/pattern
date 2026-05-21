@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
@@ -78,7 +78,7 @@
       return span;
     });
 
-    // ── animation constants ──
+    // â”€â”€ animation constants â”€â”€
     const AZUL = { r: 0, g: 85, b: 255 };
     const BRANCO = { r: 255, g: 255, b: 255 };
 
@@ -89,9 +89,9 @@
       { left: 1, right: 5, delay: 1000 },   // A, D
     ];
     const SPLIT = [
-      { idx: 2, dir: -1, delay: 2000 },  // U ←
-      { idx: 3, dir: -1, delay: 2150 },  // D ← (pouco depois)
-      { idx: 4, dir: 1, delay: 2000 },   // A →
+      { idx: 2, dir: -1, delay: 2000 },  // U â†
+      { idx: 3, dir: -1, delay: 2150 },  // D â† (pouco depois)
+      { idx: 4, dir: 1, delay: 2000 },   // A â†’
     ];
     const MOVE_DURATION = 5000;
     const MOVE_DISTANCE = 500;
@@ -99,7 +99,7 @@
     const RIPPLE_AMP = 30;
     const RIPPLE_ROT = 15;
 
-    // ── color helpers ──
+    // â”€â”€ color helpers â”€â”€
     function lerpColor(c1, c2, t) {
       return {
         r: Math.round(c1.r + (c2.r - c1.r) * t),
@@ -119,7 +119,7 @@
     const FILL_A = 1;
     const STROKE_A = 1;
 
-    // ── animation loop ──
+    // â”€â”€ animation loop â”€â”€
     let animating = false;
     let phase = 'waiting';
     let phaseStartTime = 0;
@@ -216,3 +216,4 @@
   </script>
 </body>
 </html>
+

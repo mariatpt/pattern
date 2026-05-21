@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
@@ -77,7 +77,7 @@
       <path class="cls-1" d="M320.22,27.02s-58.47,11.2-52.5,23.7c5.28,11.04,22.25,26.66,44.06,20.45,13.06-3.72,28.03-27.35,22.8-40.22,0,0-4.55-6.33-14.37-3.93Z"/>
     </g>
   </defs>
-  <!-- Versão 1 (silêncio) -->
+  <!-- VersÃ£o 1 (silÃªncio) -->
   <g id="cara-1">
     <g>
       <path class="cls-1" d="M298.17,334.42c-3.53-.35-12.33-5.93,11.36-13.56,10.87-3.5,34.09-3.13,43.97-1.89,12.22,1.54,48.7,7.5,48.7,7.5,0,0,53.8.36,59.1,0,9.93-.68,37.82-1.1,45.41.21,3.42.59,14.66,8.71,12.29,12.46,0,0-9.95.22-28.39-4.07l-57.21,1.91s-73.55-2-80.37-2.89c-10.79-1.39-44.03,1.4-54.85.32Z"/>
@@ -105,7 +105,7 @@
     <use href="#manchas-def-1" transform="translate(0,-480)"/>
     <use href="#manchas-def-1" transform="translate(0,480)"/>
   </g>
-  <!-- Versão 2 (som) -->
+  <!-- VersÃ£o 2 (som) -->
   <g id="cara-2">
     <g>
       <path class="cls-1" d="M296.28,334.97c-3.53-.35-12.33-5.93,11.36-13.56,10.87-3.5,34.09-3.13,43.97-1.89,12.22,1.54,48.7,7.5,48.7,7.5,0,0,53.8.36,59.1,0,9.93-.68,37.82-1.1,45.41.21,3.42.59,14.66,8.71,12.29,12.46,0,0-9.95.22-28.39-4.07l-57.21,1.91s-73.55-2-80.37-2.89c-10.79-1.39-44.03,1.4-54.85.32Z"/>
@@ -166,7 +166,7 @@ async function iniciarAudio() {
   } catch (err) {
     if (audioCtx) audioCtx.close();
     if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-    state.erro.textContent = 'Microfone não disponível: ' + err.message;
+    state.erro.textContent = 'Microfone nÃ£o disponÃ­vel: ' + err.message;
     state.erro.style.display = 'block';
     started = false;
   }
@@ -207,3 +207,4 @@ iniciarAudio();
 </script>
 </body>
 </html>
+
