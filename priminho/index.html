@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chris — Buon Compleanno</title>
+  <style>
+    :root {
+      --roxo: #312783;
+      --amarelo: #FFD700;
+      --branco: #FFFFFF;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      overflow-x: hidden;
+      color: var(--roxo);
+    }
+    section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    h1, h2, h3 {
+      font-family: 'Helvetica Neue Black', 'Arial Black', Arial, sans-serif;
+      font-weight: 900;
+    }
+
+    /* Hero */
+    #hero {
+      background: var(--roxo);
+      color: var(--amarelo);
+      text-align: center;
+    }
+    #hero h1 {
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    #hero .sub {
+      font-size: clamp(1rem, 2.5vw, 1.8rem);
+      line-height: 1.4;
+    }
+    #hero .sub span {
+      display: block;
+    }
+    #hero .mbare {
+      font-size: clamp(0.85rem, 2vw, 1.3rem);
+      margin-top: 12px;
+      opacity: 0.9;
+      font-style: italic;
+    }
+
+    /* Balloons container */
+    .balloons-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .balloon {
+      position: absolute;
+      pointer-events: auto;
+      cursor: pointer;
+      width: 60px;
+      animation: bob 3s ease-in-out infinite;
+    }
+    .balloon:nth-child(1) { left: 10%; top: 15%; animation-delay: 0s; }
+    .balloon:nth-child(2) { left: 25%; top: 25%; animation-delay: 0.5s; }
+    .balloon:nth-child(3) { left: 75%; top: 10%; animation-delay: 1s; }
+    .balloon:nth-child(4) { left: 85%; top: 30%; animation-delay: 1.5s; }
+    .balloon:nth-child(5) { left: 15%; top: 50%; animation-delay: 0.8s; }
+    .balloon:nth-child(6) { left: 80%; top: 55%; animation-delay: 1.2s; }
+
+    .balloon svg {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3));
+    }
+
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .balloon.popping {
+      animation: pop 0.3s ease-out forwards;
+    }
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.7; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    /* Confetti */
+    .confetti-piece {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    @keyframes confetti-fall {
+      0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) rotate(var(--tr)); opacity: 0; }
+    }
+
+    /* About */
+    #about {
+      background: var(--amarelo);
+      color: var(--roxo);
+      text-align: center;
+    }
+    #about h2 {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      margin-bottom: 24px;
+    }
+    #about p {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      max-width: 700px;
+      line-height: 1.6;
+    }
+    #about .fries {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      margin-top: 20px;
+    }
+    #about .mbare-brand {
+      margin-top: 16px;
+      font-weight: 900;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-family: 'Helvetica Neue Black', 'Arial Black', Arial, sans-serif;
+    }
+
+    /* Message */
+    #message {
+      background: var(--roxo);
+      color: var(--branco);
+      text-align: center;
+    }
+    #message h2 {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      margin-bottom: 24px;
+      color: var(--amarelo);
+    }
+    #message p {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      max-width: 700px;
+      line-height: 1.7;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--roxo);
+      color: var(--amarelo);
+      text-align: center;
+      padding: 24px;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      section { padding: 60px 20px; }
+      .balloon { width: 45px; }
+    }
+    @media (max-width: 600px) {
+      section { padding: 40px 16px; }
+      .balloon { width: 35px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero -->
+  <section id="hero">
+    <div class="balloons-container" id="balloonsContainer"></div>
+    <h1>BUON COMPLEANNO,<br>PRIMINHO!</h1>
+    <div class="sub">
+      <span>Chris • 13 Giugno</span>
+    </div>
+    <div class="mbare">Fondatore della miglior bevanda del mercato — Mbare</div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <h2>Il Priminho</h2>
+    <p>Chris è mega affettuoso, molto divertente e la persona più chill che conosca.</p>
+    <div class="fries">🍟 Ama le patatine fritte</div>
+    <div class="mbare-brand">✦ Mbare ✦</div>
+  </section>
+
+  <!-- Message -->
+  <section id="message">
+    <h2>🎉</h2>
+    <p>Happy birthday, Priminho! I really like you. Thank you for making my Erasmus so much more special with your calm, affectionate way of being, and with your carefree approach to life (and for me, who's always stressed, it's hilarious — never change). I carry you in my heart and hope to see you in Portugal or Germany ahaha</p>
+  </section>
+
+  <footer>
+    Con affetto, la tua cuginetta preferita 💜
+  </footer>
+
+  <script>
+    // Balloon SVG template
+    const balloonSVG = (fill, stringColor = '#333') => `
+      <svg viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="35" rx="25" ry="32" fill="${fill}" />
+        <path d="M30 67 L30 80" stroke="${stringColor}" stroke-width="1.5" fill="none" />
+        <path d="M28 67 L25 78" stroke="${stringColor}" stroke-width="1" fill="none" />
+        <path d="M32 67 L35 78" stroke="${stringColor}" stroke-width="1" fill="none" />
+        <ellipse cx="24" cy="28" rx="4" ry="6" fill="rgba(255,255,255,0.3)" transform="rotate(-20 24 28)" />
+      </svg>
+    `;
+
+    const colors = ['var(--roxo)', 'var(--amarelo)', 'var(--branco)'];
+    const container = document.getElementById('balloonsContainer');
+
+    // Create balloons
+    for (let i = 0; i < 6; i++) {
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      const fill = i % 2 === 0 ? '#312783' : '#FFD700';
+      balloon.innerHTML = balloonSVG(fill);
+      balloon.addEventListener('click', (e) => popBalloon(e, balloon));
+      container.appendChild(balloon);
+    }
+
+    function popBalloon(e, balloon) {
+      if (balloon.classList.contains('popping')) return;
+      const rect = balloon.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+
+      balloon.classList.add('popping');
+      spawnConfetti(cx, cy);
+    }
+
+    function spawnConfetti(cx, cy) {
+      const confettiColors = ['#312783', '#FFD700', '#FFFFFF', '#C23F1C'];
+      for (let i = 0; i < 40; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+        const size = 4 + Math.random() * 6;
+        const tx = (Math.random() - 0.5) * 300;
+        const ty = (Math.random() - 0.5) * 300 + 100;
+        const tr = Math.random() * 720;
+        const dur = 1 + Math.random() * 1;
+
+        piece.style.cssText = `
+          left: ${cx}px; top: ${cy}px;
+          width: ${size}px; height: ${size}px;
+          background: ${color};
+          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+          --tx: ${tx}px; --ty: ${ty}px; --tr: ${tr}deg;
+          animation: confetti-fall ${dur}s ease-out forwards;
+        `;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), dur * 1000);
+      }
+    }
+  </script>
+
+</body>
+</html>
