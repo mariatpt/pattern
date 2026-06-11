@@ -457,17 +457,16 @@
     document.querySelectorAll('.gift').forEach(gift => {
       gift.addEventListener('click', () => {
         const svgFile = gift.getAttribute('data-svg');
-        modalContent.innerHTML = `<svg style="width:100%;height:auto">${'<use xlink:href="' + svgFile + '"/>'}</svg>`;
-        // fallback: load as image via fetch and inline
+        overlay.classList.add('open');
+        modalContent.innerHTML = '<p style="color:white;text-align:center;padding:40px;">Caricamento...</p>';
         fetch(svgFile)
           .then(r => r.text())
           .then(svg => {
             modalContent.innerHTML = svg;
           })
           .catch(() => {
-            modalContent.innerHTML = `<p style="color:white;text-align:center;">Impossibile caricare</p>`;
+            modalContent.innerHTML = '<p style="color:white;text-align:center;padding:40px;">Impossibile caricare</p>';
           });
-        overlay.classList.add('open');
       });
     });
 
