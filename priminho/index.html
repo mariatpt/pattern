@@ -216,15 +216,14 @@
       </svg>
     `;
 
-    const colors = ['var(--roxo)', 'var(--amarelo)', 'var(--branco)'];
     const container = document.getElementById('balloonsContainer');
 
     // Create balloons
+    const fills = ['#312783', '#FFD700'];
     for (let i = 0; i < 6; i++) {
       const balloon = document.createElement('div');
       balloon.className = 'balloon';
-      const fill = i % 2 === 0 ? '#312783' : '#FFD700';
-      balloon.innerHTML = balloonSVG(fill);
+      balloon.innerHTML = balloonSVG(fills[i % 2]);
       balloon.addEventListener('click', (e) => popBalloon(e, balloon));
       container.appendChild(balloon);
     }
@@ -237,6 +236,7 @@
 
       balloon.classList.add('popping');
       spawnConfetti(cx, cy);
+      setTimeout(() => balloon.remove(), 300);
     }
 
     function spawnConfetti(cx, cy) {
