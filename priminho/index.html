@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>Chris — Buon Compleanno</title>
   <style>
     :root {
@@ -16,7 +16,56 @@
       font-family: 'Helvetica Neue', Arial, sans-serif;
       overflow-x: hidden;
       color: var(--roxo);
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
     }
+
+    /* iPhone frame */
+    .phone-frame {
+      width: 100%;
+      max-width: 393px;
+      min-height: 100vh;
+      background: var(--roxo);
+      position: relative;
+      overflow: hidden;
+    }
+    @media (min-width: 500px) {
+      body {
+        padding: 24px 0;
+        align-items: center;
+        min-height: 100vh;
+      }
+      .phone-frame {
+        border-radius: 44px;
+        border: 3px solid #333;
+        box-shadow: 0 0 60px rgba(0,0,0,0.5);
+        min-height: 852px;
+        max-height: 852px;
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+      .phone-frame::-webkit-scrollbar { display: none; }
+      /* Dynamic Island */
+      .phone-frame::before {
+        content: '';
+        position: sticky;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 126px;
+        height: 36px;
+        background: #111;
+        border-radius: 20px;
+        z-index: 100;
+        display: block;
+        margin: 0 auto -48px;
+      }
+    }
+    @media (max-width: 499px) {
+      body { background: var(--roxo); }
+    }
+
     section {
       min-height: 100vh;
       display: flex;
@@ -39,20 +88,20 @@
       text-align: center;
     }
     #hero h1 {
-      font-size: clamp(2rem, 6vw, 4.5rem);
+      font-size: clamp(1.8rem, 7vw, 2.5rem);
       line-height: 1.1;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
     #hero .sub {
-      font-size: clamp(1rem, 2.5vw, 1.8rem);
+      font-size: clamp(0.9rem, 3vw, 1.2rem);
       line-height: 1.4;
     }
     #hero .sub span {
       display: block;
     }
     #hero .mbare {
-      font-size: clamp(0.85rem, 2vw, 1.3rem);
-      margin-top: 12px;
+      font-size: clamp(0.75rem, 2.5vw, 1rem);
+      margin-top: 10px;
       opacity: 0.9;
       font-style: italic;
     }
@@ -67,15 +116,17 @@
       position: absolute;
       pointer-events: auto;
       cursor: pointer;
-      width: 60px;
+      width: 50px;
       animation: bob 3s ease-in-out infinite;
     }
-    .balloon:nth-child(1) { left: 10%; top: 15%; animation-delay: 0s; }
-    .balloon:nth-child(2) { left: 25%; top: 25%; animation-delay: 0.5s; }
-    .balloon:nth-child(3) { left: 75%; top: 10%; animation-delay: 1s; }
-    .balloon:nth-child(4) { left: 85%; top: 30%; animation-delay: 1.5s; }
-    .balloon:nth-child(5) { left: 15%; top: 50%; animation-delay: 0.8s; }
-    .balloon:nth-child(6) { left: 80%; top: 55%; animation-delay: 1.2s; }
+    .balloon:nth-child(1) { left: 5%; top: 12%; animation-delay: 0s; }
+    .balloon:nth-child(2) { left: 20%; top: 20%; animation-delay: 0.3s; }
+    .balloon:nth-child(3) { left: 60%; top: 8%; animation-delay: 0.6s; }
+    .balloon:nth-child(4) { left: 80%; top: 22%; animation-delay: 0.9s; }
+    .balloon:nth-child(5) { left: 10%; top: 45%; animation-delay: 1.1s; }
+    .balloon:nth-child(6) { left: 70%; top: 48%; animation-delay: 1.3s; }
+    .balloon:nth-child(7) { left: 40%; top: 5%; animation-delay: 0.2s; }
+    .balloon:nth-child(8) { left: 50%; top: 55%; animation-delay: 1.5s; }
 
     .balloon svg {
       width: 100%;
@@ -85,7 +136,7 @@
 
     @keyframes bob {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
+      50% { transform: translateY(-12px); }
     }
 
     .balloon.popping {
@@ -110,6 +161,96 @@
       100% { transform: translate(var(--tx), var(--ty)) rotate(var(--tr)); opacity: 0; }
     }
 
+    /* Gifts */
+    #gifts {
+      background: var(--roxo);
+      color: var(--amarelo);
+      text-align: center;
+      min-height: auto;
+      padding: 40px 24px 60px;
+    }
+    #gifts h2 {
+      font-size: clamp(1.3rem, 5vw, 2rem);
+      margin-bottom: 24px;
+    }
+    .gifts-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .gift {
+      width: 80px;
+      height: 90px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .gift:hover { transform: scale(1.1); }
+    .gift:active { transform: scale(0.95); }
+    .gift-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .gift-box svg { width: 100%; height: auto; }
+    .gift-label {
+      margin-top: 6px;
+      font-size: 0.65rem;
+      opacity: 0.8;
+      font-family: 'Helvetica Neue Black', 'Arial Black', Arial, sans-serif;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-content {
+      max-width: 90vw;
+      max-height: 85vh;
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    }
+    .modal-content img,
+    .modal-content svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 85vh;
+      object-fit: contain;
+    }
+    .modal-close {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.4); }
+
     /* About */
     #about {
       background: var(--amarelo);
@@ -117,22 +258,22 @@
       text-align: center;
     }
     #about h2 {
-      font-size: clamp(1.5rem, 4vw, 3rem);
-      margin-bottom: 24px;
+      font-size: clamp(1.3rem, 5vw, 2rem);
+      margin-bottom: 20px;
     }
     #about p {
-      font-size: clamp(1rem, 2.5vw, 1.5rem);
-      max-width: 700px;
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      max-width: 320px;
       line-height: 1.6;
     }
     #about .fries {
-      font-size: clamp(1.2rem, 3vw, 2rem);
-      margin-top: 20px;
+      font-size: clamp(1.1rem, 4vw, 1.5rem);
+      margin-top: 16px;
     }
     #about .mbare-brand {
-      margin-top: 16px;
+      margin-top: 14px;
       font-weight: 900;
-      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
       font-family: 'Helvetica Neue Black', 'Arial Black', Arial, sans-serif;
     }
 
@@ -143,13 +284,13 @@
       text-align: center;
     }
     #message h2 {
-      font-size: clamp(1.5rem, 4vw, 3rem);
-      margin-bottom: 24px;
+      font-size: clamp(1.3rem, 5vw, 2rem);
+      margin-bottom: 20px;
       color: var(--amarelo);
     }
     #message p {
-      font-size: clamp(1rem, 2.5vw, 1.5rem);
-      max-width: 700px;
+      font-size: clamp(0.85rem, 3vw, 1.05rem);
+      max-width: 320px;
       line-height: 1.7;
     }
 
@@ -158,51 +299,95 @@
       background: var(--roxo);
       color: var(--amarelo);
       text-align: center;
-      padding: 24px;
-      font-size: 0.85rem;
+      padding: 20px;
+      font-size: 0.75rem;
       opacity: 0.7;
-    }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      section { padding: 60px 20px; }
-      .balloon { width: 45px; }
-    }
-    @media (max-width: 600px) {
-      section { padding: 40px 16px; }
-      .balloon { width: 35px; }
     }
   </style>
 </head>
 <body>
+  <div class="phone-frame">
 
-  <!-- Hero -->
-  <section id="hero">
-    <div class="balloons-container" id="balloonsContainer"></div>
-    <h1>BUON COMPLEANNO,<br>PRIMINHO!</h1>
-    <div class="sub">
-      <span>Chris • 13 Giugno</span>
-    </div>
-    <div class="mbare">Fondatore della miglior bevanda del mercato — Mbare</div>
-  </section>
+    <!-- Hero -->
+    <section id="hero">
+      <div class="balloons-container" id="balloonsContainer"></div>
+      <h1>BUON COMPLEANNO,<br>PRIMINHO!</h1>
+      <div class="sub">
+        <span>Chris • 13 Giugno</span>
+      </div>
+      <div class="mbare">Fondatore della miglior bevanda del mercato — Mbare</div>
+    </section>
 
-  <!-- About -->
-  <section id="about">
-    <h2>Il Priminho</h2>
-    <p>Chris è mega affettuoso, molto divertente e la persona più chill che conosca.</p>
-    <div class="fries">🍟 Ama le patatine fritte</div>
-    <div class="mbare-brand">✦ Mbare ✦</div>
-  </section>
+    <!-- Gifts -->
+    <section id="gifts">
+      <h2>🎁 I regali</h2>
+      <div class="gifts-row">
+        <div class="gift" data-svg="t shirt branca.svg">
+          <div class="gift-box">
+            <svg viewBox="0 0 80 80">
+              <rect x="20" y="25" width="40" height="35" rx="3" fill="#C23F1C"/>
+              <rect x="25" y="30" width="12" height="12" rx="2" fill="#FFD700"/>
+              <rect x="43" y="30" width="12" height="12" rx="2" fill="#FFD700"/>
+              <path d="M28 25 Q40 15 52 25" stroke="#C23F1C" stroke-width="2.5" fill="none"/>
+              <rect x="14" y="28" width="8" height="6" rx="2" fill="#FFD700"/>
+              <rect x="58" y="28" width="8" height="6" rx="2" fill="#FFD700"/>
+            </svg>
+          </div>
+          <div class="gift-label">T-shirt</div>
+        </div>
+        <div class="gift" data-svg="magna.svg">
+          <div class="gift-box">
+            <svg viewBox="0 0 80 80">
+              <rect x="20" y="25" width="40" height="35" rx="3" fill="#FFD700"/>
+              <rect x="25" y="30" width="12" height="12" rx="2" fill="#312783"/>
+              <rect x="43" y="30" width="12" height="12" rx="2" fill="#312783"/>
+              <path d="M28 25 Q40 15 52 25" stroke="#FFD700" stroke-width="2.5" fill="none"/>
+              <rect x="14" y="28" width="8" height="6" rx="2" fill="#312783"/>
+              <rect x="58" y="28" width="8" height="6" rx="2" fill="#312783"/>
+            </svg>
+          </div>
+          <div class="gift-label">Magna</div>
+        </div>
+        <div class="gift" data-svg="ilhas.svg">
+          <div class="gift-box">
+            <svg viewBox="0 0 80 80">
+              <rect x="20" y="25" width="40" height="35" rx="3" fill="#C23F1C"/>
+              <rect x="25" y="30" width="12" height="12" rx="2" fill="#FFD700"/>
+              <rect x="43" y="30" width="12" height="12" rx="2" fill="#FFD700"/>
+              <path d="M28 25 Q40 15 52 25" stroke="#C23F1C" stroke-width="2.5" fill="none"/>
+              <rect x="14" y="28" width="8" height="6" rx="2" fill="#FFD700"/>
+              <rect x="58" y="28" width="8" height="6" rx="2" fill="#FFD700"/>
+            </svg>
+          </div>
+          <div class="gift-label">Ilhas</div>
+        </div>
+      </div>
+    </section>
 
-  <!-- Message -->
-  <section id="message">
-    <h2>🎉</h2>
-    <p>Happy birthday, Priminho! I really like you. Thank you for making my Erasmus so much more special with your calm, affectionate way of being, and with your carefree approach to life (and for me, who's always stressed, it's hilarious — never change). I carry you in my heart and hope to see you in Portugal or Germany ahaha</p>
-  </section>
+    <!-- About -->
+    <section id="about">
+      <h2>Il Priminho</h2>
+      <p>Chris è mega affettuoso, molto divertente e la persona più chill che conosca.</p>
+      <div class="fries">🍟 Ama le patatine fritte</div>
+      <div class="mbare-brand">✦ Mbare ✦</div>
+    </section>
 
-  <footer>
-    Con affetto, la tua cuginetta preferita 💜
-  </footer>
+    <!-- Message -->
+    <section id="message">
+      <h2>🎉</h2>
+      <p>Happy birthday, Priminho! I really like you. Thank you for making my Erasmus so much more special with your calm, affectionate way of being, and with your carefree approach to life (and for me, who's always stressed, it's hilarious — never change). I carry you in my heart and hope to see you in Portugal or Germany ahaha</p>
+    </section>
+
+    <footer>
+      Con affetto, la tua cuginetta preferita 💜
+    </footer>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <button class="modal-close" id="modalClose">✕</button>
+    <div class="modal-content" id="modalContent"></div>
+  </div>
 
   <script>
     // Balloon SVG template
@@ -218,12 +403,12 @@
 
     const container = document.getElementById('balloonsContainer');
 
-    // Create balloons
-    const fills = ['#312783', '#FFD700'];
-    for (let i = 0; i < 6; i++) {
+    // Create balloons: 2 purple + 6 yellow
+    const balloonColors = ['#312783', '#FFD700', '#FFD700', '#FFD700', '#FFD700', '#FFD700', '#FFD700', '#312783'];
+    for (let i = 0; i < 8; i++) {
       const balloon = document.createElement('div');
       balloon.className = 'balloon';
-      balloon.innerHTML = balloonSVG(fills[i % 2]);
+      balloon.innerHTML = balloonSVG(balloonColors[i]);
       balloon.addEventListener('click', (e) => popBalloon(e, balloon));
       container.appendChild(balloon);
     }
@@ -263,6 +448,38 @@
         setTimeout(() => piece.remove(), dur * 1000);
       }
     }
+
+    // Gift modal
+    const overlay = document.getElementById('modalOverlay');
+    const modalContent = document.getElementById('modalContent');
+    const closeBtn = document.getElementById('modalClose');
+
+    document.querySelectorAll('.gift').forEach(gift => {
+      gift.addEventListener('click', () => {
+        const svgFile = gift.getAttribute('data-svg');
+        modalContent.innerHTML = `<svg style="width:100%;height:auto">${'<use xlink:href="' + svgFile + '"/>'}</svg>`;
+        // fallback: load as image via fetch and inline
+        fetch(svgFile)
+          .then(r => r.text())
+          .then(svg => {
+            modalContent.innerHTML = svg;
+          })
+          .catch(() => {
+            modalContent.innerHTML = `<p style="color:white;text-align:center;">Impossibile caricare</p>`;
+          });
+        overlay.classList.add('open');
+      });
+    });
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      modalContent.innerHTML = '';
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
   </script>
 
 </body>
